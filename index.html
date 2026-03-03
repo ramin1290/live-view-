@@ -12,9 +12,21 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   const map = L.map('map').setView([23.8,90.4],7);
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-    attribution:'© Esri'
+
+  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap'
   }).addTo(map);
+
+  const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+    attribution:'© Esri'
+  });
+
+  const baseMaps = {
+    "রাস্তা": osm,
+    "স্যাটেলাইট": sat
+  };
+  L.control.layers(baseMaps).addTo(map);
+
   const marker = L.marker([23.8,90.4]).addTo(map);
 
   async function fetchData(){
