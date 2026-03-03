@@ -27,4 +27,18 @@
   async function fetchData() {
     try {
       const r = await fetch('https://api.thingspeak.com/channels/991037/fields/1/last.json');
-      const
+      const d = await r.json();
+      const lat = parseFloat(d.field1);
+      const lon = parseFloat(d.field2); // field2 তোমার চ্যানেলে থাকলে
+      if (!isNaN(lat) && !isNaN(lon)) {
+        marker.setLatLng([lat, lon]);
+        map.setView([lat, lon]);
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  fetchData();
+  setInterval(fetchData, 15000); // 15 সেকেন্ড
+</script>
+</body>
+</html>
