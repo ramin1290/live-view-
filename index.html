@@ -9,22 +9,15 @@
 </head>
 <body>
 <div id="map"></div>
-
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
   const CHANNEL_ID = "3274323";
-  const READ_API_KEY = "5UR6BT58FHL9G0B1"; // ← এখানে বসাও
+  const READ_API_KEY = "5UR6BT58FHL9G0B1";
 
-  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19, attribution:'© OpenStreetMap'
-  });
-  const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-    maxZoom:19, attribution:'© Esri'
-  });
-
+  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19});
+  const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19});
   const map = L.map('map',{layers:[osm]}).setView([23.81,90.41],13);
-  const base = {"OpenStreet":osm,"Satellite":sat};
-  L.control.layers(base).addTo(map);
+  L.control.layers({"OpenStreet":osm,"Satellite":sat}).addTo(map);
 
   let marker;
   async function fetchPos(){
@@ -32,14 +25,16 @@
       const r = await fetch(`https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds/last.json?api_key=${READ_API_KEY}`);
       const d = await r.json();
       const lat = parseFloat(d.field1), lng = parseFloat(d.field2);
+      const spd = d.field3; // +ADD
       if(isNaN(lat)||isNaN(lng)) return;
       if(marker) map.removeLayer(marker);
-      marker = L.marker([lat,lng]).addTo(map).bindPopup("Bike").openPopup();
+      marker = L.marker([lat,lng]).addTo(map)
+              .bindPopup(`Speed: ${spd} km/h`) // +ADD
+              .openPopup();
       map.setView([lat,lng],15);
-    }catch(e){console.error(e)}
+    }catch(e){}
   }
-  fetchPos();
-  setInterval(fetchPos,15000);
+  fetchPos(); setInterval(fetchPos,15000);
 </script>
 </body>
 </html>
