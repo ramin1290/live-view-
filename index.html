@@ -28,9 +28,11 @@
       const spd = d.field3; // +ADD
       if(isNaN(lat)||isNaN(lng)) return;
       if(marker) map.removeLayer(marker);
-      marker = L.marker([lat,lng]).addTo(map)
-              .bindPopup(`Speed: ${spd} km/h`) // +ADD
-              .openPopup();
+
+      const gmap = `https://www.google.com/maps?q=${lat},${lng}`; // +ADD
+      const html = `Speed: ${spd} km/h<br><a href="${gmap}" target="_blank">Open in Google Maps</a>`; // +ADD
+
+      marker = L.marker([lat,lng]).addTo(map).bindPopup(html).openPopup(); // +ADD
       map.setView([lat,lng],15);
     }catch(e){}
   }
